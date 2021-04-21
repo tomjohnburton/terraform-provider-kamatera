@@ -9,37 +9,6 @@
 # You will need to pass the `--batch` flag to `gpg` in your signing step 
 # in `goreleaser` to indicate this is being used in a non-interactive mode.
 #
-name: test
-on:
-  push:
-jobs:
-  test:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - env:
-          KAMATERA_API_CLIENT_ID: ${{ secrets.KAMATERA_API_CLIENT_ID }}
-          KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
-        run: |
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION="$(echo $GITHUB_REF | sed -e 's:refs/tags/::')"
-          else
-            VERSION=0.0.0
-          fi &&\
-          go build -ldflags "-X main.Version=${VERSION}" -o terraform-provider-kamatera &&\
-          curl -sSL https://releases.hashicorp.com/terraform/0.12.25/terraform_0.12.25_linux_amd64.zip -o terraform.zip &&\
-          unzip terraform.zip &&\
-          curl -sSL https://cloudcli.cloudwm.com/binaries/latest/cloudcli-linux-amd64.tar.gz -o cloudcli.tar.gz &&\
-          tar -xzvf cloudcli.tar.gz &&\
-          chmod +x terraform-provider-kamatera terraform cloudcli &&\
-          export PATH=`pwd`:$PATH &&\
-          python3 tests/e2e_test.py
-      - uses: actions/upload-artifact@v1
-        if: always()
-        with:
-          name: tests_output
-          path: tests/output
----
 name: release
 on:
   push:
