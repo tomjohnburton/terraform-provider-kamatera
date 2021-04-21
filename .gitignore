@@ -7,3 +7,4 @@ tests/output
 build
 cloudcli*
 terraform
+terraform-provider-kamatera_modules
